@@ -1,17 +1,18 @@
 
-## Project Overview: 
+### Project Overview 
 
-### Wiki Page: [Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
+## Wiki Page: 
+
+[Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
 
 
 
 ## Project Goals
 
-
 - Detect sounds which exceed the adjustable threschold and respond using module with LED matrix on Raspberry Pi 4B  board and sensor on Raspberry Pi zero 2 board.
 
 
-- Enable **communication** using the **CAN protocol** with **MCP2515 SPI modules**.
+- Enable **communication** using the **CAN protocol** with **RS485 / MCP2515 SPI modules**.
 
 
 - Control of Sound Sensor and of LED module with **GPIO** on the Raspberry Pi Zero and 4B correspondingly.
@@ -33,11 +34,10 @@ TBD
 
 
 
-
-
 ## Group Overview
 
-TBD 
+Vladimir Ilia Zdravkov 
+vladzdravkov@gmail.com
 
 
 
@@ -45,5 +45,4 @@ TBD
 
 ## Schedule Page
 
-TBD
-A shared schedule and milestones for the project can be found at the [Project Schedule](link).
+A shared schedule and milestones for the project can be found at the [Project Schedule](https://github.com/users/vizdr/projects/1).
