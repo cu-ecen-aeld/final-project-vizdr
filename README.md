@@ -1,7 +1,7 @@
 
 ## Project Overview: 
 
-### Wiki Page: [ Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/# Motion Sensor-Based Appliance Control System
+### Wiki Page: [Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
 
 
 
