@@ -1,7 +1,7 @@
 
-### Project Overview 
+# Project Overview 
 
-## Wiki Page: 
+## Wiki Page with Overview 
 
 [Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
 
