@@ -1,6 +1,29 @@
 #!/bin/bash
-# Script to build image for qemu.
-# Author: Siddhant Jajoo.
+# Script to build image for raspberry pi 4 using Yocto Project
+# Author: Siddhant Jajoo, Vladimir Zdravkov.
+
+# Add required layers
+
+add_layer_if_missing() {
+    LAYER_NAME=$1
+    LAYER_PATH=$2
+
+    # Convert to absolute path
+    LAYER_ABS_PATH=$(readlink -f "$LAYER_PATH")
+    
+    if [ ! -d "$LAYER_ABS_PATH" ]; then
+        echo "Error: Layer path $LAYER_ABS_PATH not found!"
+        exit 1
+    fi
+
+    if ! bitbake-layers show-layers | grep -q "$LAYER_ABS_PATH"; then
+        echo "Adding $LAYER_NAME layer..."
+        bitbake-layers add-layer "$LAYER_ABS_PATH"
+    else
+        echo "$LAYER_NAME layer already added."
+    fi
+}
+
 PROJECT_ROOT="$(pwd)"
 
 set -e
@@ -21,6 +44,7 @@ for layer in poky meta-raspberrypi meta-openembedded; do
     fi
 done
 
+############################################################
 # local.conf won't exist until this step on first execution
 source poky/oe-init-build-env
 
@@ -35,6 +59,8 @@ MEMORY="GPU_MEM = \"16\""
 #Licence
 LICENCE="LICENSE_FLAGS_ACCEPTED = \"commercial\""
 
+###########################################################
+
 cat conf/local.conf | grep "${CONFLINE}" > /dev/null
 local_conf_info=$?
 
@@ -47,10 +73,12 @@ local_memory_info=$?
 cat conf/local.conf | grep "${LICENCE}" > /dev/null
 local_licn_info=$?
 
+#########################################################
+# Append necessary lines to local.conf if not already present
 
 if [ $local_conf_info -ne 0 ];then
 	echo "Append ${CONFLINE} in the local.conf file"
-	echo ${CONFLINE} >> conf/local.conf
+	echo "${CONFLINE}" | tee -a conf/local.conf
 	
 else
 	echo "${CONFLINE} already exists in the local.conf file"
@@ -63,36 +91,46 @@ else
 	echo "${IMAGE} already exists in the local.conf file"
 fi
 
-bitbake-layers show-layers | grep "meta-aesd" > /dev/null
-if [ $local_memory_info -ne 0 ];then
+# bitbake-layers show-layers | grep "meta-aesd" > /dev/null
+# if [ $local_memory_info -ne 0 ];then
+#     echo "Append ${MEMORY} in the local.conf file"
+# 	echo ${MEMORY} >> conf/local.conf
+# else
+# 	echo "${MEMORY} already exists in the local.conf file"
+# fi
+
+if [ $local_memory_info -ne 0 ]; then
     echo "Append ${MEMORY} in the local.conf file"
-	echo ${MEMORY} >> conf/local.conf
+    echo "${MEMORY}" | tee -a conf/local.conf
 else
-	echo "${MEMORY} already exists in the local.conf file"
+    echo "${MEMORY} already exists in the local.conf file"
 fi
+
 
 if [ $local_licn_info -ne 0 ];then
     echo "Append ${LICENCE} in the local.conf file"
-	echo ${LICENCE} >> conf/local.conf
+	echo "${LICENCE}" | tee -a conf/local.conf
 else
 	echo "${LICENCE} already exists in the local.conf file"
 fi
 
+##########################################################
 
-bitbake-layers show-layers | grep "meta-raspberrypi" > /dev/null
-layer_info=$?
+add_layer_if_missing "meta-raspberrypi" "../meta-raspberrypi"
+add_layer_if_missing "meta-openembedded" "../meta-openembedded/meta-oe"
+add_layer_if_missing "meta-ledhat" "../meta-ledhat"
+add_layer_if_missing "meta-aesd" "../meta-aesd"
 
-
-if [ $layer_info -ne 0 ];then
-	echo "Adding meta-aesd layer"
-	bitbake-layers add-layer ../meta-aesd
-	echo "Adding meta-raspberrypi layer"
-	bitbake-layers add-layer ../meta-raspberrypi
-else
-	echo "meta-aesd layer already exists"
-	echo "layer meta-raspberrypi already exists"
-fi
-
-
-bitbake core-image-aesd
+echo "=============================================="
+echo "Yocto build configuration summary:"
+echo "Machine:    raspberrypi4-64"
+echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd"
+echo "Image type: wic.bz2"
+echo "=============================================="
+# Show current layers
+echo ""
+echo "Current layers:"
+bitbake-layers show-layers
+###########################################################
+# bitbake core-image-aesd
 bitbake core-image-base
