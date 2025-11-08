@@ -1,10 +1,11 @@
 
-# Final project AESD repo   
+# AELD final project repo   
 
 **Advanced Embedded Linux Development - ECEA 5305-5307**
+
 This repo is **Yocto part** of the project for the reciver and indicator board - **Raspberry Pi 4B**
 
-The one more **Yocto part** of the project  for the sender board - **Raspberry Pi Zero 2 WH** is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
+The one more **Yocto part** of the project  for the sender board - **Raspberry Pi Zero 2 WH** can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
 
 ## Project Overview 
@@ -15,7 +16,7 @@ The one more **Yocto part** of the project  for the sender board - **Raspberry P
 
 ## Project Goals
 
-- Detect sounds which exceed the adjustable threschold and respond using module with LED matrix on Raspberry Pi 4B  board and sensor on Raspberry Pi zero 2 board.
+- Detect sounds which exceed the adjustable threschold and respond using module with LED matrix on **Raspberry Pi 4B**  board and sensor on **Raspberry Pi zero 2 WH** board.
 
 
 - Enable **communication** using the **CAN protocol** with **RS485 / MCP2515 SPI modules**.
