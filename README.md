@@ -1,9 +1,9 @@
 
 # ECEA 5305-5307 final project
 
-This is Yocto part of the project for Raspberry Pi 4B board
+This is Yocto part of the project for reciver and indicator board - Raspberry Pi 4B
 
-The Yocto part of the project  for another board Raspberry Pi Zero 2 WH is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
+The Yocto part of the project  for sender board - Raspberry Pi Zero 2 WH is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
 ##  Project Overview 
 
@@ -23,7 +23,7 @@ Wiki Page with the project overview can be found
 - Control of Sound Sensor and of LED module with **GPIO** on the Raspberry Pi Zero and 4B correspondingly.
 
 
-- Implement a **state-machine based system** triggered by remote-side sound detection.
+- Implement apllication part with **state-machine based system** triggered by remote-side sound detection.
 
 
 - Utilize **Yocto** to generate a lightweight Linux image with integrated kernel drivers and services.
@@ -34,12 +34,12 @@ Wiki Page with the project overview can be found
 
 Yocto part for the sender board - Raspberry Pi Zero 2 WH can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
-Yocto part for the receiver board - Raspberry Pi 4B is the current repo [link] (https://github.com/cu-ecen-aeld/final-project-vizdr)
+Yocto part for the receiver board - Raspberry Pi 4B is the current repo [link](https://github.com/cu-ecen-aeld/final-project-vizdr)
 
 Application part will be placed in [repo](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
 
-## Group Overview
+## Project Member
 
 Vladimir Ilia Zdravkov 
 vladzdravkov@gmail.com
