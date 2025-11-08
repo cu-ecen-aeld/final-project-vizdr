@@ -5,11 +5,10 @@ This is Yocto part of the project for reciver and indicator board - Raspberry Pi
 
 The Yocto part of the project  for sender board - Raspberry Pi Zero 2 WH is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
-##  Project Overview 
+## Project Overview 
 
 Wiki Page with the project overview can be found
 [here](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
-
 
 
 ## Project Goals
@@ -29,14 +28,13 @@ Wiki Page with the project overview can be found
 - Utilize **Yocto** to generate a lightweight Linux image with integrated kernel drivers and services.
 
 
-
 ## Source Code Organization
 
 Yocto part for the sender board - Raspberry Pi Zero 2 WH can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
 Yocto part for the receiver board - Raspberry Pi 4B is the current repo [link](https://github.com/cu-ecen-aeld/final-project-vizdr)
 
-Application part will be placed in [repo](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
+Application part will be placed in the separate [repo](https://github.com/vizdr/final-project-assignment-app-vizdr) 
 
 
 ## Project Member
