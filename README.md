@@ -1,9 +1,14 @@
 
-# Project Overview 
+# ECEA 5305-5307 final project
 
-## Wiki Page with Overview 
+This is Yocto part of the project for Raspberry Pi 4B board
 
-[Monitoring System with Alarm function based on Sound Detection](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
+The Yocto part of the project  for another board Raspberry Pi Zero 2 WH is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
+
+##  Project Overview 
+
+Wiki Page with the project overview can be found
+[here](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
 
 
 
@@ -25,13 +30,13 @@
 
 
 
-
-
 ## Source Code Organization
 
+Yocto part for the sender board - Raspberry Pi Zero 2 WH can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
-TBD
+Yocto part for the receiver board - Raspberry Pi 4B is the current repo [link] (https://github.com/cu-ecen-aeld/final-project-vizdr)
 
+Application part will be placed in [repo](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
 
 ## Group Overview
@@ -40,9 +45,6 @@ Vladimir Ilia Zdravkov
 vladzdravkov@gmail.com
 
 
-
-
-
 ## Schedule Page
 
-A shared schedule and milestones for the project can be found at the [Project Schedule](https://github.com/users/vizdr/projects/1).
+An entire schedule and milestones for the project can be found [here](https://github.com/users/vizdr/projects/1).
