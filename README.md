@@ -14,23 +14,6 @@ The one more **Yocto part** of the project  for the sender board - **Raspberry P
 [here](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki/Project-Overview)
 
 
-## Project Goals
-
-- Detect sounds which exceed the adjustable threschold and respond using module with LED matrix on **Raspberry Pi 4B**  board and sensor on **Raspberry Pi zero 2 WH** board.
-
-
-- Enable **communication** using the **CAN protocol** with **RS485 / MCP2515 SPI modules**.
-
-
-- Control of Sound Sensor and of LED module with **GPIO** on the Raspberry Pi Zero and 4B correspondingly.
-
-
-- Implement apllication part with **state-machine based system** triggered by remote-side sound detection.
-
-
-- Utilize **Yocto** to generate a lightweight Linux image with integrated kernel drivers and services.
-
-
 ## Source Code Organization
 
 Yocto part for the sender board - Raspberry Pi Zero 2 WH can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
