@@ -1,14 +1,16 @@
 
-# Advanced Embedded Linux Development - ECEA 5305-5307 final project
+# Advanced Embedded Linux Development - ECEA 5305-5307  
 
+** Final project repo**
 This repo is Yocto part of the project for reciver and indicator board - Raspberry Pi 4B
 
 The Yocto part of the project  for sender board - Raspberry Pi Zero 2 WH is [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
+
 ## Project Overview 
 
-Wiki Page with the entire project overview can be found
-[here](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki)
+**Wiki Page** with the entire project overview can be found
+[here](https://github.com/cu-ecen-aeld/final-project-vizdr/wiki/Project-Overview)
 
 
 ## Project Goals
