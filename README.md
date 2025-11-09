@@ -5,7 +5,7 @@
 
 Advanced Embedded Linux Development - ECEA 5305-5307
 
-This repo is **Yocto part** of the project for the reciver and indicator board - **Raspberry Pi 4B**
+This repo is **Yocto part** of the project for the receiver and indicator board - **Raspberry Pi 4B**
 
 The one more **Yocto part** of the project  for the sender board - **Raspberry Pi Zero 2 WH** can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
@@ -22,9 +22,9 @@ The one more **Yocto part** of the project  for the sender board - **Raspberry P
 
 ## Source Code Organization
 
-Yocto part for the sender board - Raspberry Pi Zero 2 WH can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
+Yocto part for the sender board - **Raspberry Pi Zero 2 WH** can be found [here](https://github.com/vizdr/final-project-assignment-vladzdravkov) 
 
-Yocto part for the receiver board - Raspberry Pi 4B is the current [repo](https://github.com/cu-ecen-aeld/final-project-vizdr)
+Yocto part for the receiver board - **Raspberry Pi 4B** is the current [repo](https://github.com/cu-ecen-aeld/final-project-vizdr)
 
 Application part will be placed in the separate [repo](https://github.com/vizdr/final-project-assignment-app-vizdr) 
 
