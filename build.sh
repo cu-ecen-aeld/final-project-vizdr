@@ -24,6 +24,16 @@ add_layer_if_missing() {
     fi
 }
 
+############################################################
+
+if [ "$1" = "clean" ]; then
+    echo "Cleaning Yocto build directories..."
+    rm -rf tmp sstate-cache downloads cache
+    echo "Cleanup complete."
+    exit 0
+fi
+
+
 PROJECT_ROOT="$(pwd)"
 
 set -e
@@ -45,7 +55,8 @@ for layer in poky meta-raspberrypi meta-openembedded; do
 done
 
 ############################################################
-# local.conf won't exist until this step on first execution
+
+# local.conf configuraion
 source poky/oe-init-build-env
 
 CONFLINE="MACHINE = \"raspberrypi4-64\""
@@ -59,73 +70,45 @@ MEMORY="GPU_MEM = \"16\""
 #Licence
 LICENCE="LICENSE_FLAGS_ACCEPTED = \"commercial\""
 
+#----------------------------------------------------------
+# CAN-related configuration for Waveshare RS485 CAN HAT Rev 2.1
+# (12 MHz crystal, interrupt on GPIO25)
+CAN_SPI='ENABLE_SPI_BUS = "1"'
+CAN_DTO='APPEND += " dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25 dtoverlay=spi1-1cs "'
+CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
+CAN_INIT='IMAGE_INSTALL:append = " can-init "'
+
 ###########################################################
 
-cat conf/local.conf | grep "${CONFLINE}" > /dev/null
-local_conf_info=$?
-
-cat conf/local.conf | grep "${IMAGE}" > /dev/null
-local_image_info=$?
-
-cat conf/local.conf | grep "${MEMORY}" > /dev/null
-local_memory_info=$?
-
-cat conf/local.conf | grep "${LICENCE}" > /dev/null
-local_licn_info=$?
+# Append all configuration entries if not already present in local.conf
+for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT"; do
+    if ! grep -q "$VAR" conf/local.conf; then
+        echo "Appending $VAR"
+        echo "$VAR" | tee -a conf/local.conf
+    else
+        echo "$VAR already exists."
+    fi
+done
 
 #########################################################
-# Append necessary lines to local.conf if not already present
-
-if [ $local_conf_info -ne 0 ];then
-	echo "Append ${CONFLINE} in the local.conf file"
-	echo "${CONFLINE}" | tee -a conf/local.conf
-	
-else
-	echo "${CONFLINE} already exists in the local.conf file"
-fi
-
-if [ $local_image_info -ne 0 ];then 
-    echo "Append ${IMAGE} in the local.conf file"
-	echo ${IMAGE} >> conf/local.conf
-else
-	echo "${IMAGE} already exists in the local.conf file"
-fi
-
-# bitbake-layers show-layers | grep "meta-aesd" > /dev/null
-# if [ $local_memory_info -ne 0 ];then
-#     echo "Append ${MEMORY} in the local.conf file"
-# 	echo ${MEMORY} >> conf/local.conf
-# else
-# 	echo "${MEMORY} already exists in the local.conf file"
-# fi
-
-if [ $local_memory_info -ne 0 ]; then
-    echo "Append ${MEMORY} in the local.conf file"
-    echo "${MEMORY}" | tee -a conf/local.conf
-else
-    echo "${MEMORY} already exists in the local.conf file"
-fi
-
-
-if [ $local_licn_info -ne 0 ];then
-    echo "Append ${LICENCE} in the local.conf file"
-	echo "${LICENCE}" | tee -a conf/local.conf
-else
-	echo "${LICENCE} already exists in the local.conf file"
-fi
-
+# Add required layers
 ##########################################################
 
 add_layer_if_missing "meta-raspberrypi" "../meta-raspberrypi"
 add_layer_if_missing "meta-openembedded" "../meta-openembedded/meta-oe"
 add_layer_if_missing "meta-ledhat" "../meta-ledhat"
 add_layer_if_missing "meta-aesd" "../meta-aesd"
+add_layer_if_missing "meta-can" "../meta-can"
 
+###########################################################
+# Show build configuration summary
 echo "=============================================="
 echo "Yocto build configuration summary:"
 echo "Machine:    raspberrypi4-64"
-echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd"
+echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd, meta-can"
 echo "Image type: wic.bz2"
+echo "CAN overlay:     mcp2515-can0 @ 12 MHz (GPIO25 interrupt)"
+echo "Init system:     BusyBox (/etc/init.d/S40can0)"
 echo "=============================================="
 # Show current layers
 echo ""
