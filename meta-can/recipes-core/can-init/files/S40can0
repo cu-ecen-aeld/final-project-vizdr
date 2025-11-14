@@ -1,11 +1,11 @@
 #!/bin/sh
 case "$1" in
   start)
-    echo "Bringing up CAN0 interface..."
+    echo "Bringing up mcp2515 CAN0 interface..."
     /sbin/ip link set can0 up type can bitrate 500000
     ;;
   stop)
-    echo "Bringing down CAN0 interface..."
+    echo "Bringing down mcp2515 CAN0 interface..."
     /sbin/ip link set can0 down
     ;;
 esac

@@ -2,7 +2,12 @@
 # Script to build image for raspberry pi 4 using Yocto Project
 # Author: Siddhant Jajoo, Vladimir Zdravkov.
 
-# Add required layers
+PROJECT_ROOT="$(pwd)"
+
+set -e
+
+############################################################
+# Function to add layer if not already added
 
 add_layer_if_missing() {
     LAYER_NAME=$1
@@ -25,6 +30,7 @@ add_layer_if_missing() {
 }
 
 ############################################################
+# Clean build directories if 'clean' argument is provided
 
 if [ "$1" = "clean" ]; then
     echo "Cleaning Yocto build directories..."
@@ -32,31 +38,70 @@ if [ "$1" = "clean" ]; then
     echo "Cleanup complete."
     exit 0
 fi
+############################################################
+# Define desired versions/tags/commits
+#-----------------------------------------------
+# Initialize and pin Yocto layers only once
+#-----------------------------------------------
+PROJECT_ROOT=$(pwd)
+UPDATE_LAYERS=false
 
+# Optional flag: ./build.sh --update to force layer sync
+if [[ "$1" == "--update" ]]; then
+    UPDATE_LAYERS=true
+    echo "Forcing Yocto layer update..."
+fi
 
-PROJECT_ROOT="$(pwd)"
+# Define desired versions/tags/commits
+POKY_TAG="yocto-4.0.29"
+META_RPI_COMMIT="255500dd9f6a01a3445ac491d1abc401801e3bad"
+META_OE_COMMIT="96fbc156364fd78530d2bfbe1b8a77789f52997d"
 
-set -e
+declare -A LAYER_VERSION_MAP=(
+  [poky]="$POKY_TAG"
+  [meta-raspberrypi]="$META_RPI_COMMIT"
+  [meta-openembedded]="$META_OE_COMMIT"
+)
 
-git submodule init
-git submodule sync
-git submodule update
+# Initialize submodules only if missing
+if [ ! -d "poky" ]; then
+    echo "Initializing git submodules..."
+    git submodule init
+    git submodule update
+else
+    echo "✅ Submodules already initialized."
+fi
 
-# Ensure all submodules are on kirkstone branch
-for layer in poky meta-raspberrypi meta-openembedded; do
+# Loop through and pin each layer
+for layer in "${!LAYER_VERSION_MAP[@]}"; do
     if [ -d "$layer" ]; then
-        echo "Checking out $layer to kirkstone branch..."
         cd "$layer"
-        git fetch --all --tags
-        git checkout kirkstone || git checkout -b kirkstone origin/kirkstone
-        git pull origin kirkstone || true
+        current_commit=$(git rev-parse HEAD)
+        target="${LAYER_VERSION_MAP[$layer]}"
+
+        if $UPDATE_LAYERS; then
+            echo "→ Updating $layer to $target ..."
+            git fetch --all --tags
+            git checkout "$target"
+        else
+            # Only checkout if current commit doesn't match
+            if ! git merge-base --is-ancestor "$target" "$current_commit" 2>/dev/null; then
+                echo "→ Checking out $layer to pinned version $target ..."
+                git fetch --all --tags
+                git checkout "$target"
+            else
+                echo "✅ $layer already at desired version ($target)"
+            fi
+        fi
         cd "$PROJECT_ROOT"
+    else
+        echo "⚠️  Layer $layer not found!"
     fi
 done
 
-############################################################
+###########################################################
+# local.conf configuration
 
-# local.conf configuraion
 source poky/oe-init-build-env
 
 CONFLINE="MACHINE = \"raspberrypi4-64\""
@@ -68,13 +113,13 @@ IMAGE="IMAGE_FSTYPES = \"wic.bz2\""
 MEMORY="GPU_MEM = \"16\""
 
 #Licence
-LICENCE="LICENSE_FLAGS_ACCEPTED = \"commercial\""
+LICENSE="LICENSE_FLAGS_ACCEPTED = \"commercial\""
 
 #----------------------------------------------------------
 # CAN-related configuration for Waveshare RS485 CAN HAT Rev 2.1
 # (12 MHz crystal, interrupt on GPIO25)
 CAN_SPI='ENABLE_SPI_BUS = "1"'
-CAN_DTO='APPEND += " dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25 dtoverlay=spi1-1cs "'
+CAN_DTO='RPI_EXTRA_CONFIG = "dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25,spimaxfrequency=5000000 dtoverlay=spi1-1cs"'
 CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
 CAN_INIT='IMAGE_INSTALL:append = " can-init "'
 
