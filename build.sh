@@ -38,6 +38,36 @@ if [ "$1" = "clean" ]; then
     echo "Cleanup complete."
     exit 0
 fi
+
+############################################################
+# Manual recipe cleanup: ./build.sh <clean-type> <recipe>
+# clean       → bitbake -c clean <recipe>
+# cleanall    → bitbake -c cleanall <recipe>
+# cleansstate → bitbake -c cleansstate <recipe>
+############################################################
+
+if [[ "$1" =~ ^(clean|cleanall|cleansstate)$ ]] && [ -n "$2" ]; then
+    CLEAN_ACTION="$1"
+    RECIPE="$2"
+
+    echo "Performing $CLEAN_ACTION on recipe: $RECIPE"
+
+    case "$CLEAN_ACTION" in
+        clean)
+            bitbake -c clean "$RECIPE"
+            ;;
+        cleanall)
+            bitbake -c cleanall "$RECIPE"
+            ;;
+        cleansstate)
+            bitbake -c cleansstate "$RECIPE"
+            ;;
+    esac
+
+    # Stop script after cleanup
+    exit 0
+fi
+
 ############################################################
 # Define desired versions/tags/commits
 #-----------------------------------------------
