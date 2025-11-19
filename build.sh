@@ -152,11 +152,11 @@ CAN_SPI='ENABLE_SPI_BUS = "1"'
 CAN_DTO='RPI_EXTRA_CONFIG = "dtoverlay=mcp2515-can0,oscillator=12000000,interrupt=25,spimaxfrequency=5000000 dtoverlay=spi1-1cs"'
 CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
 CAN_INIT='IMAGE_INSTALL:append = " can-init "'
-
+CAN_SERVER='IMAGE_INSTALL:append = " can-server "'
 ###########################################################
 
 # Append all configuration entries if not already present in local.conf
-for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT"; do
+for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" "$CAN_SERVER"; do
     if ! grep -q "$VAR" conf/local.conf; then
         echo "Appending $VAR"
         echo "$VAR" | tee -a conf/local.conf
@@ -174,13 +174,14 @@ add_layer_if_missing "meta-openembedded" "../meta-openembedded/meta-oe"
 add_layer_if_missing "meta-ledhat" "../meta-ledhat"
 add_layer_if_missing "meta-aesd" "../meta-aesd"
 add_layer_if_missing "meta-can" "../meta-can"
+add_layer_if_missing "meta-can-server" "../meta-can-server"
 
 ###########################################################
 # Show build configuration summary
 echo "=============================================="
 echo "Yocto build configuration summary:"
 echo "Machine:    raspberrypi4-64"
-echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd, meta-can"
+echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd, meta-can, meta-can-server"
 echo "Image type: wic.bz2"
 echo "CAN overlay:     mcp2515-can0 @ 12 MHz (GPIO25 interrupt)"
 echo "Init system:     BusyBox (/etc/init.d/S40can0)"

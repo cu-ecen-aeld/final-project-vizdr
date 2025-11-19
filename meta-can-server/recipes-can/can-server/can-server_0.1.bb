@@ -1,0 +1,32 @@
+SUMMARY = "CAN Socket Receiver Application"
+DESCRIPTION = "Reads detection count from CAN bus and writes it to a file using SocketCAN"
+LICENSE = "MIT"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/MIT;md5=0835ade698e0bcf8506ecda2f7b4f302"
+SRC_URI = "git://github.com/vizdr/final-project-assignment-app-vizdr.git;protocol=https;nobranch=1"
+SRCREV = "071a333ffb8ac1d8fde01e84026e594675c1d90c"
+PV = "1.0+git${SRCPV}"
+S = "${WORKDIR}/git/Socket_CAN_Receiver"
+
+SRC_URI += "file://S99can-server"
+
+inherit cmake update-rc.d
+INITSCRIPT_NAME = "can-server"
+INITSCRIPT_PARAMS = "defaults 99"
+
+# Optionally can be set CMake options
+EXTRA_OECMAKE = ""
+
+do_install() {
+    # Install binary
+    install -d ${D}${bindir}
+    install -m 0755 ${B}/can_server_receiver ${D}${bindir}/
+
+    # Install init script as S99can-server (renamed to can-server)
+    install -d ${D}${sysconfdir}/init.d
+    install -m 0755 ${WORKDIR}/S99can-server ${D}${sysconfdir}/init.d/can-server
+}
+
+FILES_${PN} += "\
+    ${bindir}/can_server_receiver \
+    ${sysconfdir}/init.d/can-server \
+"
