@@ -1,159 +1,4 @@
 /*
- * Simple WS2812B demo using rpi_ws281x library
- * Build and run as root or via systemd service
- */
-
-/* #include <stdio.h>
-#include <stdint.h>
-#include <unistd.h>
-#include "ws2811.h"
-
-#include <signal.h>
-
-static volatile sig_atomic_t g_stop = 0;
-
-static void handle_sig(int sig)
-{
-    (void)sig;
-    g_stop = 1;
-}
-
-#define LED_COUNT 64
-#define GPIO_PIN 18
-#define DMA_CHANNEL 10
-
-// Colors in GRB format
-#define COLOR_NAVY 0x00000080
-#define COLOR_PURPLE 0x00800080
-#define COLOR_BLUE 0x000000FF
-#define COLOR_GREEN 0x0000FF00
-#define COLOR_BROWN 0x00800000
-#define COLOR_MAGENTA 0x00FF00FF
-#define COLOR_PINK 0x00FFC0CB
-#define COLOR_ORANGE 0x00FFA500
-#define COLOR_YELLOW 0x00FFFF00
-#define COLOR_RED 0x00FF0000
-
-#define COLOR_OFF 0x00000000
-#define COLOR_WHITE 0x00FFFFFF
-
-#define COLOR_CYAN 0x0000FFFF
-#define COLOR_LIME 0x0000FF00
-#define COLOR_TEAL 0x00008080
-
-#define READFILETPATH "/var/tmp/audio_detection"
-#define READ_INTERVAL_SEC 5 // Read file every 5 seconds
-
-static int *colors = (int[]){
-    COLOR_OFF,
-    COLOR_NAVY,
-    COLOR_PURPLE,
-    COLOR_BLUE,
-    COLOR_GREEN,
-    COLOR_BROWN,
-    COLOR_MAGENTA,
-    COLOR_PINK,
-    COLOR_ORANGE,
-    COLOR_YELLOW,
-    COLOR_RED,
-};
-
-ws2811_t ledstring = {
-    .freq = WS2811_TARGET_FREQ,
-    .dmanum = DMA_CHANNEL,
-    .channel = {
-        [0] = {
-            .gpionum = GPIO_PIN,
-            .count = LED_COUNT,
-            .invert = 0,
-            .brightness = 255,
-            .strip_type = WS2811_STRIP_GRB,
-        },
-        [1] = {
-            .gpionum = 0,
-            .count = 0,
-            .invert = 0,
-            .brightness = 0,
-        },
-    },
-};
-*/
-// int main(int argc, char **argv)
-// {
-//     struct sigaction sa;
-
-//     /* Setup signal handling */
-//     memset(&sa, 0, sizeof(sa));
-//     sa.sa_handler = handle_sig;
-//     sigaction(SIGINT, &sa, NULL);
-//     sigaction(SIGTERM, &sa, NULL);
-
-//     FILE *readFile;
-
-//     if (ws2811_init(&ledstring) != WS2811_SUCCESS)
-//     {
-//         fprintf(stderr, "ws2811_init failed\n");
-//         return -1;
-//     }
-
-//     // --- Main loop ---
-//     while (!g_stop)
-//     {
-//         readFile = fopen(READFILETPATH, "r");
-//         if (readFile == NULL)
-//         {
-//             fprintf(stderr, "Failed to open file for reading: %s\n", READFILETPATH);
-//             sleep(READ_INTERVAL_SEC);
-//             continue;
-//         }
-//         else
-//         {
-//             char buffer[16];
-//             if (fgets(buffer, sizeof(buffer), readFile) != NULL)
-//             {
-//                 int colorIndex = atoi(buffer);
-//                 if (colorIndex < 0 || colorIndex >= sizeof(colors) / sizeof(colors[0]))
-//                 {
-//                     colorIndex = 0; // Default to off if out of range
-//                 }
-//                 // Set all LEDs to the selected color
-//                 for (int i = 0; i < LED_COUNT; i++)
-//                 {
-//                     ledstring.channel[0].leds[i] = colors[colorIndex];
-//                 }
-//                 ws2811_render(&ledstring);
-//             }
-//             fclose(readFile);
-//             sleep(READ_INTERVAL_SEC);
-//         }
-//         // simple chase pattern
-//         for (int iter = 0; iter < 5; iter++)
-//         {
-//             for (int i = 0; i < LED_COUNT; i++)
-//             {
-//                 // set all to off
-//                 for (int j = 0; j < LED_COUNT; j++)
-//                 {
-//                     ledstring.channel[0].leds[j] = 0x00000000;
-//                 }
-//                 // one pixel red
-//                 ledstring.channel[0].leds[i] = 0x00FF0000; // GRB order: green=0x00, red=0xFF
-//                 ws2811_render(&ledstring);
-//                 usleep(50000);
-//             }
-//         }
-//     }
-//     // clear
-//     for (int i = 0; i < LED_COUNT; i++)
-//     {
-//         ledstring.channel[0].leds[i] = 0x00000000;
-//     }
-//     ws2811_render(&ledstring);
-//     ws2811_fini(&ledstring);
-//     return 0;
-// }
-
-/*
  * led_controller  (with INOTIFY real-time file monitoring)
  *
  * Reads color index from INPUT_FILE and drives WS2811 LEDs.
@@ -163,7 +8,7 @@ ws2811_t ledstring = {
  *      * parse error → WHITE flicker
  * - Alarm mode:
  *      * out-of-range index greater than COLORS_COUNT → RED flicker
- * - Auto-recovery using INOTIFY (no more stat() polling!)
+ * - Auto-recovery using INOTIFY on file changes.
  * - Logs to /var/log/led-controller.log
  *
  * Build Makefile example:
@@ -548,7 +393,7 @@ int main(int argc, char **argv)
             while (loops-- > 0 && !g_stop)
             {
                 usleep(100000); /* 0.1s */
-                if (wait_for_file_change(in_fd))
+                if (wait_for_file_change(in_fd_notify))
                     break;
             }
         }
