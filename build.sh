@@ -162,7 +162,7 @@ QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland opengl egl eglfs vulkan "'
 QT_PACKAGES='IMAGE_INSTALL:append = " \
     qtbase qtbase-tools \
     qtdeclarative \
-    qtwayland qtsvg qttools qt6-quickcontrols2 \
+    qtwayland qtsvg qttools quickcontrols2 \
 "'
 QT_EGLFS='PACKAGECONFIG:append:pn-qtbase = " eglfs kms gles2 "'
 QT_VULKAN='IMAGE_INSTALL:append = " mesa-vulkan-drivers "'
