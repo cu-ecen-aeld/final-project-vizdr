@@ -86,11 +86,13 @@ fi
 POKY_TAG="yocto-4.0.29"
 META_RPI_COMMIT="255500dd9f6a01a3445ac491d1abc401801e3bad"
 META_OE_COMMIT="96fbc156364fd78530d2bfbe1b8a77789f52997d"
+QT6_TAG="v6.7.2" 
 
 declare -A LAYER_VERSION_MAP=(
   [poky]="$POKY_TAG"
   [meta-raspberrypi]="$META_RPI_COMMIT"
   [meta-openembedded]="$META_OE_COMMIT"
+  [meta-qt6]="$QT6_TAG"
 )
 
 # Initialize submodules only if missing
@@ -129,6 +131,9 @@ for layer in "${!LAYER_VERSION_MAP[@]}"; do
     fi
 done
 
+# Stage the updated submodule pointers
+git add meta-qt6
+git commit -m "Pin meta-qt6 submodule to $QT6_TAG"
 ###########################################################
 # local.conf configuration
 
@@ -153,10 +158,23 @@ CAN_DTO='RPI_EXTRA_CONFIG = "dtoverlay=mcp2515-can0,oscillator=12000000,interrup
 CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
 CAN_INIT='IMAGE_INSTALL:append = " can-init "'
 CAN_SERVER='IMAGE_INSTALL:append = " can-server "'
+QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland opengl egl eglfs vulkan "'
+QT_PACKAGES='IMAGE_INSTALL:append = " \
+    qtbase qtbase-tools \
+    qtdeclarative \
+    qtwayland qtsvg qttools qt6-quickcontrols2 \
+"'
+QT_EGLFS='PACKAGECONFIG:append:pn-qtbase = " eglfs kms gles2 "'
+QT_VULKAN='IMAGE_INSTALL:append = " mesa-vulkan-drivers "'
+
 ###########################################################
 
 # Append all configuration entries if not already present in local.conf
-for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" "$CAN_SERVER"; do
+for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" \
+    "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" \
+    "$CAN_SERVER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
+    "$QT_VULKAN" ; do
+
     if ! grep -q "$VAR" conf/local.conf; then
         echo "Appending $VAR"
         echo "$VAR" | tee -a conf/local.conf
@@ -171,6 +189,11 @@ done
 
 add_layer_if_missing "meta-raspberrypi" "../meta-raspberrypi"
 add_layer_if_missing "meta-openembedded" "../meta-openembedded/meta-oe"
+
+add_layer_if_missing "meta-python" "../meta-openembedded/meta-python"
+add_layer_if_missing "meta-multimedia" "../meta-openembedded/meta-multimedia"
+add_layer_if_missing "meta-qt6" "../meta-qt6"
+
 add_layer_if_missing "meta-ledhat" "../meta-ledhat"
 add_layer_if_missing "meta-aesd" "../meta-aesd"
 add_layer_if_missing "meta-can" "../meta-can"
@@ -181,7 +204,7 @@ add_layer_if_missing "meta-can-server" "../meta-can-server"
 echo "=============================================="
 echo "Yocto build configuration summary:"
 echo "Machine:    raspberrypi4-64"
-echo "Layers:     meta-raspberrypi, meta-openembedded, meta-ledhat, meta-aesd, meta-can, meta-can-server"
+echo "Layers:     RPi + OE + Qt6 + custom: meta-ledhat, meta-aesd, meta-can, meta-can-server"
 echo "Image type: wic.bz2"
 echo "CAN overlay:     mcp2515-can0 @ 12 MHz (GPIO25 interrupt)"
 echo "Init system:     BusyBox (/etc/init.d/S40can0)"
@@ -192,4 +215,5 @@ echo "Current layers:"
 bitbake-layers show-layers
 ###########################################################
 # bitbake core-image-aesd
-bitbake core-image-base
+bitbake core-image-weston
+
