@@ -132,8 +132,8 @@ for layer in "${!LAYER_VERSION_MAP[@]}"; do
 done
 
 # Stage the updated submodule pointers
-git add meta-qt6
-git commit -m "Pin meta-qt6 submodule to $QT6_TAG"
+# git add meta-qt6
+# git commit -m "Pin meta-qt6 submodule to $QT6_TAG"
 ###########################################################
 # local.conf configuration
 
@@ -150,6 +150,8 @@ MEMORY="GPU_MEM = \"16\""
 #Licence
 LICENSE="LICENSE_FLAGS_ACCEPTED = \"commercial\""
 
+#Disable rust to avoid build issues
+RUST_DISABLE="RUST_ENABLED = \"0\"" 
 #----------------------------------------------------------
 # CAN-related configuration for Waveshare RS485 CAN HAT Rev 2.1
 # (12 MHz crystal, interrupt on GPIO25)
@@ -158,22 +160,29 @@ CAN_DTO='RPI_EXTRA_CONFIG = "dtoverlay=mcp2515-can0,oscillator=12000000,interrup
 CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
 CAN_INIT='IMAGE_INSTALL:append = " can-init "'
 CAN_SERVER='IMAGE_INSTALL:append = " can-server "'
-QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland opengl egl eglfs vulkan "'
-QT_PACKAGES='IMAGE_INSTALL:append = " \
-    qtbase qtbase-tools \
-    qtdeclarative \
-    qtwayland qtsvg qttools quickcontrols2 \
-"'
-QT_EGLFS='PACKAGECONFIG:append:pn-qtbase = " eglfs kms gles2 "'
+
+QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland egl eglfs vulkan "'
+QT_FEATURES_REMOVE='DISTRO_FEATURES:remove = " x11 rust "'
+QT_PACKAGES='IMAGE_INSTALL:append = " qtbase qtbase-tools qtdeclarative qtwayland qtsvg qttools qtdeclarative-qmlplugins "'
+QT_EGLFS='PACKAGECONFIG:append:pn-qtbase = " eglfs kms gles2 gbm "'
+QT_EGLFS_REMOVE='PACKAGECONFIG:remove:pn-qtbase = " xcb xlib opengl "' 
 QT_VULKAN='IMAGE_INSTALL:append = " mesa-vulkan-drivers "'
+
+# Mesa configuration for GLES2/EGL support
+MESA_CONFIG='PREFERRED_PROVIDER_virtual/libgles2 = "mesa"'
+MESA_INSTALL='IMAGE_INSTALL:append = " mesa "'
+MESA_PACKAGES='PACKAGECONFIG:append:pn-mesa = " egl gles gbm kms "'
+
+# Remove GTK+ demo to avoid vc-graphics conflicts
+GTK_REMOVE='IMAGE_INSTALL:remove = "gtk+3-demo"'
 
 ###########################################################
 
 # Append all configuration entries if not already present in local.conf
-for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" \
+for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$RUST_DISABLE" \
     "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" \
     "$CAN_SERVER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
-    "$QT_VULKAN" ; do
+    "$QT_FEATURES_REMOVE" "$QT_VULKAN" "$GTK_REMOVE" "$MESA_CONFIG" "$MESA_INSTALL" "$MESA_PACKAGES" ; do
 
     if ! grep -q "$VAR" conf/local.conf; then
         echo "Appending $VAR"
@@ -215,5 +224,5 @@ echo "Current layers:"
 bitbake-layers show-layers
 ###########################################################
 # bitbake core-image-aesd
-bitbake core-image-weston
+bitbake core-image-base
 
