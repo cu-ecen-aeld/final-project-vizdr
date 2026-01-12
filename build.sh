@@ -163,10 +163,11 @@ CAN_SERVER='IMAGE_INSTALL:append = " can-server "'
 
 QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland egl eglfs vulkan "'
 QT_FEATURES_REMOVE='DISTRO_FEATURES:remove = " x11 rust "'
-QT_PACKAGES='IMAGE_INSTALL:append = " qtbase qtbase-tools qtdeclarative qtwayland qtsvg qttools qtdeclarative-qmlplugins "'
+QT_PACKAGES='IMAGE_INSTALL:append = " qtbase qtbase-tools qtdeclarative qtwayland qtsvg qttools qtdeclarative-qmlplugins qtcharts "'
 QT_EGLFS='PACKAGECONFIG:append:pn-qtbase = " eglfs kms gles2 gbm "'
-QT_EGLFS_REMOVE='PACKAGECONFIG:remove:pn-qtbase = " xcb xlib opengl "' 
+QT_EGLFS_REMOVE='PACKAGECONFIG:remove:pn-qtbase = " xcb xlib opengl "'
 QT_VULKAN='IMAGE_INSTALL:append = " mesa-vulkan-drivers "'
+CAN_VISUALIZER='IMAGE_INSTALL:append = " can-visualizer "'
 
 # Mesa configuration for GLES2/EGL support
 MESA_CONFIG='PREFERRED_PROVIDER_virtual/libgles2 = "mesa"'
@@ -181,7 +182,7 @@ GTK_REMOVE='IMAGE_INSTALL:remove = "gtk+3-demo"'
 # Append all configuration entries if not already present in local.conf
 for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$RUST_DISABLE" \
     "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" \
-    "$CAN_SERVER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
+    "$CAN_SERVER" "$CAN_VISUALIZER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
     "$QT_FEATURES_REMOVE" "$QT_VULKAN" "$GTK_REMOVE" "$MESA_CONFIG" "$MESA_INSTALL" "$MESA_PACKAGES" ; do
 
     if ! grep -q "$VAR" conf/local.conf; then
@@ -207,16 +208,18 @@ add_layer_if_missing "meta-ledhat" "../meta-ledhat"
 add_layer_if_missing "meta-aesd" "../meta-aesd"
 add_layer_if_missing "meta-can" "../meta-can"
 add_layer_if_missing "meta-can-server" "../meta-can-server"
+add_layer_if_missing "meta-can-visualizer" "../meta-can-visualizer"
 
 ###########################################################
 # Show build configuration summary
 echo "=============================================="
 echo "Yocto build configuration summary:"
 echo "Machine:    raspberrypi4-64"
-echo "Layers:     RPi + OE + Qt6 + custom: meta-ledhat, meta-aesd, meta-can, meta-can-server"
+echo "Layers:     RPi + OE + Qt6 + custom: meta-ledhat, meta-aesd, meta-can, meta-can-server, meta-can-visualizer"
 echo "Image type: wic.bz2"
 echo "CAN overlay:     mcp2515-can0 @ 12 MHz (GPIO25 interrupt)"
-echo "Init system:     BusyBox (/etc/init.d/S40can0)"
+echo "Qt6 Apps:        can-visualizer (QML charts)"
+echo "Init system:     BusyBox (/etc/init.d/S40can0, S98can-visualizer, S99can-server)"
 echo "=============================================="
 # Show current layers
 echo ""
