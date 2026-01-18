@@ -160,6 +160,7 @@ CAN_DTO='RPI_EXTRA_CONFIG = "dtoverlay=mcp2515-can0,oscillator=12000000,interrup
 CAN_TOOLS='IMAGE_INSTALL:append = " can-utils iproute2 "'
 CAN_INIT='IMAGE_INSTALL:append = " can-init "'
 CAN_SERVER='IMAGE_INSTALL:append = " can-server "'
+LEDHAT='IMAGE_INSTALL:append = " ledhat "'
 
 QT_FEATURES='DISTRO_FEATURES:append = " qt6 wayland egl eglfs vulkan "'
 QT_FEATURES_REMOVE='DISTRO_FEATURES:remove = " x11 rust "'
@@ -182,7 +183,7 @@ GTK_REMOVE='IMAGE_INSTALL:remove = "gtk+3-demo"'
 # Append all configuration entries if not already present in local.conf
 for VAR in "$CONFLINE" "$IMAGE" "$MEMORY" "$LICENSE" "$RUST_DISABLE" \
     "$CAN_SPI" "$CAN_DTO" "$CAN_TOOLS" "$CAN_INIT" \
-    "$CAN_SERVER" "$CAN_VISUALIZER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
+    "$CAN_SERVER" "$LEDHAT" "$CAN_VISUALIZER" "$QT_FEATURES" "$QT_PACKAGES" "$QT_EGLFS" \
     "$QT_FEATURES_REMOVE" "$QT_VULKAN" "$GTK_REMOVE" "$MESA_CONFIG" "$MESA_INSTALL" "$MESA_PACKAGES" ; do
 
     if ! grep -q "$VAR" conf/local.conf; then

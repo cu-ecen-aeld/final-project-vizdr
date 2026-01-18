@@ -301,7 +301,7 @@ int main(int argc, char **argv)
     {
         long idx;
         int r = read_index(INPUT_FILE, &idx, logf);
-
+        int current_phase_duration_factor = 10; // equal durations for heartbeat phases
         int parse_err = (r == 0);
         int out_of_range = (r == 1 && (idx < 0 || idx >= (long)COLORS_COUNT));
         int ok = (r == 1 && !out_of_range);
@@ -389,10 +389,12 @@ int main(int argc, char **argv)
             fflush(logf);
 
             /* Wait up to READ_INTERVAL_SEC for inotify change */
-            int loops = READ_INTERVAL_SEC * 10;
+            current_phase_duration_factor = heartbeat == 0 ? 12 : 8;
+            int loops = READ_INTERVAL_SEC * current_phase_duration_factor;
+                   
             while (loops-- > 0 && !g_stop)
             {
-                usleep(100000); /* 0.1s */
+                usleep(50000); /* 0.05s */
                 if (wait_for_file_change(in_fd_notify))
                     break;
             }

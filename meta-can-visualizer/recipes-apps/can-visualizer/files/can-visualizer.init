@@ -25,41 +25,32 @@ test -x $DAEMON || exit 0
 
 case "$1" in
     start)
-        echo -n "Starting $DESC: "
-        start-stop-daemon --start --quiet --background \
-            --make-pidfile --pidfile $PIDFILE \
-            --exec $DAEMON
-        echo "$NAME."
+        echo "Starting $DESC in 3 seconds..."
+        sleep 3
+        echo "Starting $NAME (foreground mode - press Ctrl+C to stop)"
+        # Attach to console TTY for keyboard input
+        setsid sh -c "exec $DAEMON < /dev/tty1 > /dev/tty1 2>&1" &
         ;;
 
     stop)
         echo -n "Stopping $DESC: "
-        start-stop-daemon --stop --quiet --pidfile $PIDFILE
-        rm -f $PIDFILE
-        echo "$NAME."
+        killall $NAME 2>/dev/null
+        echo "done."
         ;;
 
     restart|force-reload)
         echo -n "Restarting $DESC: "
-        start-stop-daemon --stop --quiet --pidfile $PIDFILE
-        rm -f $PIDFILE
-        sleep 1
-        start-stop-daemon --start --quiet --background \
-            --make-pidfile --pidfile $PIDFILE \
-            --exec $DAEMON
-        echo "$NAME."
+        killall $NAME 2>/dev/null
+        sleep 3
+        echo "Starting $NAME (foreground mode - press Ctrl+C to stop)"
+        # Attach to console TTY for keyboard input
+        setsid sh -c "exec $DAEMON < /dev/tty1 > /dev/tty1 2>&1" &
         ;;
 
     status)
-        if [ -f $PIDFILE ]; then
-            PID=$(cat $PIDFILE)
-            if kill -0 $PID 2>/dev/null; then
-                echo "$NAME is running (PID: $PID)"
-                exit 0
-            else
-                echo "$NAME is not running (stale PID file)"
-                exit 1
-            fi
+        if pgrep -x $NAME > /dev/null; then
+            echo "$NAME is running"
+            exit 0
         else
             echo "$NAME is not running"
             exit 3

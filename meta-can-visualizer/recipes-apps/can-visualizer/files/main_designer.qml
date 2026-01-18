@@ -15,6 +15,15 @@ Window {
     title: "Sound Detection Monitor - Designer Preview"
     color: "#1a1a1a"
 
+    // Handle Ctrl+C keyboard shortcut to quit application
+    Shortcut {
+        sequence: "Ctrl+C"
+        onActivated: {
+            console.log("Ctrl+C pressed - exiting application")
+            Qt.quit()
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 10

@@ -2,12 +2,35 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QDebug>
+#include <csignal>
 
 #include "datacollector.h"
+
+// Global pointer to application for signal handler
+static QApplication* g_app = nullptr;
+
+// Signal handler for SIGINT (Ctrl+C) and SIGTERM
+void signalHandler(int signal)
+{
+    if (signal == SIGINT) {
+        qDebug() << "\nReceived SIGINT (Ctrl+C), shutting down gracefully...";
+    } else if (signal == SIGTERM) {
+        qDebug() << "\nReceived SIGTERM, shutting down gracefully...";
+    }
+
+    if (g_app) {
+        g_app->quit();
+    }
+}
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    g_app = &app;
+
+    // Install signal handlers for graceful shutdown
+    std::signal(SIGINT, signalHandler);   // Ctrl+C
+    std::signal(SIGTERM, signalHandler);  // kill command
 
     app.setApplicationName("CAN Visualizer");
     app.setApplicationVersion("1.0");
@@ -41,6 +64,10 @@ int main(int argc, char *argv[])
     }
 
     qDebug() << "CAN Visualizer started successfully";
+    qDebug() << "Press Ctrl+C to exit";
 
-    return app.exec();
+    int result = app.exec();
+
+    qDebug() << "CAN Visualizer shutdown complete";
+    return result;
 }

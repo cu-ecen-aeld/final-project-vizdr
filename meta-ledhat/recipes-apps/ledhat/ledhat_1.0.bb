@@ -15,7 +15,10 @@ S = "${WORKDIR}"
 
 DEPENDS = "rpi-ws281x"
 
-inherit cmake pkgconfig
+inherit cmake pkgconfig update-rc.d
+
+INITSCRIPT_NAME = "ledhat"
+INITSCRIPT_PARAMS = "defaults 95"
 
 PV = "1.0"
 
@@ -24,5 +27,12 @@ do_install() {
     install -m 0755 ${B}/ledhat ${D}${bindir}/
 
     install -d ${D}${sysconfdir}/init.d
-    install -m 0755 ${S}/ledhat.init ${D}${sysconfdir}/init.d/
+    install -m 0755 ${S}/ledhat.init ${D}${sysconfdir}/init.d/ledhat
 }
+
+FILES:${PN} += "\
+    ${bindir}/ledhat \
+    ${sysconfdir}/init.d/ledhat \
+"
+
+RDEPENDS:${PN} += "rpi-ws281x"

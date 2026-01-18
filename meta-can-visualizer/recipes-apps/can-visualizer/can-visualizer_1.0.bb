@@ -37,4 +37,4 @@ FILES:${PN} += "\
     ${sysconfdir}/init.d/can-visualizer \
 "
 
-RDEPENDS:${PN} += "qtbase qtdeclarative qtcharts"
+RDEPENDS:${PN} += "qtbase qtdeclarative qtcharts fontconfig liberation-fonts"
